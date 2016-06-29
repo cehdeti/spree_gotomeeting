@@ -43,7 +43,7 @@ Spree::Admin::ProductsController.class_eval do
 
       if @product.is_webinar
         if !@product.webinar_date.nil?
-          if @product.webinar_key.nil?
+          if @product.webinar_key.empty?
             make_webinar_in_citrix
           else
             update_webinar_in_citrix
@@ -63,14 +63,13 @@ Spree::Admin::ProductsController.class_eval do
     end
 
     def make_webinar_in_citrix
-
       @g2w = GoToWebinar::Client.new( Spree::GoToMeeting::ACCESS_TOKEN, Spree::GoToMeeting::ORGANIZER_KEY)
 
       params = generate_params
 
       newwebinar = @g2w.class.post('webinars', :body => params.to_json)
 
-      webinar_key = parse_response_for_webinar_key newwebinar
+      webinar_key = parse_response_for_webinar_key(newwebinar)
 
       if !webinar_key.nil?
         @product.webinar_key=webinar_key
@@ -86,7 +85,7 @@ Spree::Admin::ProductsController.class_eval do
 
       updated_webinar = @g2w.class.put('webinars/'.concat(@product.webinar_key), :body => params.to_json)
 
-      updated_key = updated_webinar.parsed_response
+      updated_key = parse_response_for_webinar_key ( updated_webinar )
     end
 
     def generate_params
@@ -95,10 +94,11 @@ Spree::Admin::ProductsController.class_eval do
       endTime = startTime + 1.hour
 
       params = {
-          :times=>[:startTime=>startTime.strftime("%FT%TZ"), :endTime=> endTime.strftime("%FT%TZ")],
-          :timezone=>'CST',
-          :subject=>@product.name,
-          :description=> strip_tags(@product.description)
+          :times => [:startTime=>startTime.strftime("%FT%TZ"), :endTime=> endTime.strftime("%FT%TZ")],
+          :timezone => 'CST',
+          :subject => @product.name,
+          :description => strip_tags(@product.description),
+          :isPasswordProtected => true
       }
 
       params
@@ -108,9 +108,12 @@ Spree::Admin::ProductsController.class_eval do
 
     def parse_response_for_webinar_key( api_response )
 
+      puts "PARSING RESPONSE: #{api_response.parsed_response}"
+
       res = api_response.parsed_response
       key = nil
-      if res['webinarKey'] && !res['webinarKey'].empty?
+
+      if res && res['webinarKey'] && !res['webinarKey'].empty?
         key = res['webinarKey']
       end
 
