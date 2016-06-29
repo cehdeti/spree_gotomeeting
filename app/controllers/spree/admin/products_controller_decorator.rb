@@ -11,31 +11,25 @@ Spree::Admin::ProductsController.class_eval do
 
   def webinar_create_before
 
-    puts "create before!"
 
     check_webinar_before_save
   end
 
   def webinar_update_before
 
-    puts "update before!"
 
-    dosave = check_webinar_before_save
+    check_webinar_before_save
 
-    dosave
   end
 
 
 
   def webinar_create_after
 
-    puts 'Create after!'
     check_webinar_saved
   end
 
   def webinar_update_after
-
-    puts "update after! #{@product}"
 
     check_webinar_saved
 
@@ -46,16 +40,13 @@ Spree::Admin::ProductsController.class_eval do
 
 
     def check_webinar_saved
-      puts "CHECKING FOR WEBINAR #{@product}"
 
       if @product.is_webinar
         if !@product.webinar_date.nil?
           if @product.webinar_key.nil?
-            puts "IS WEBINAR, HAS DATE, BUT NO WEBINAR KEY!"
             make_webinar_in_citrix
           else
-            puts "IS WEBINAR, BUT ALREADY HAS KEY"
-            make_webinar_in_citrix
+            update_webinar_in_citrix
           end
         end
       end
@@ -74,11 +65,35 @@ Spree::Admin::ProductsController.class_eval do
     def make_webinar_in_citrix
 
       @g2w = GoToWebinar::Client.new( Spree::GoToMeeting::ACCESS_TOKEN, Spree::GoToMeeting::ORGANIZER_KEY)
-#2016-08-01T13:30:00Z
 
+      params = generate_params
+
+      newwebinar = @g2w.class.post('webinars', :body => params.to_json)
+
+      webinar_key = parse_response_for_webinar_key newwebinar
+
+      if !webinar_key.nil?
+        @product.webinar_key=webinar_key
+        @product.save
+      end
+    end
+
+    def update_webinar_in_citrix
+
+      @g2w = GoToWebinar::Client.new( Spree::GoToMeeting::ACCESS_TOKEN, Spree::GoToMeeting::ORGANIZER_KEY)
+
+      params = generate_params
+
+      updated_webinar = @g2w.class.put('webinars/'.concat(@product.webinar_key), :body => params.to_json)
+
+      updated_key = updated_webinar.parsed_response
+    end
+
+    def generate_params
 
       startTime = @product.webinar_date - Time.zone_offset('EST')
       endTime = startTime + 1.hour
+
       params = {
           :times=>[:startTime=>startTime.strftime("%FT%TZ"), :endTime=> endTime.strftime("%FT%TZ")],
           :timezone=>'CST',
@@ -86,21 +101,21 @@ Spree::Admin::ProductsController.class_eval do
           :description=> strip_tags(@product.description)
       }
 
-      puts "pARAMS: #{params.to_json}"
+      params
+    end
 
-      newwebinar = @g2w.class.post('webinars', :body => params.to_json)
 
-      res = newwebinar.parsed_response
 
-      puts "RESpONSe: #{res}"
+    def parse_response_for_webinar_key( api_response )
 
+      res = api_response.parsed_response
+      key = nil
       if res['webinarKey'] && !res['webinarKey'].empty?
-        new_webinar_key = res['webinarKey']
-        @product.webinar_key=new_webinar_key
-        @product.save
-
-        puts "NEW WEBINAR KEY #{new_webinar_key}"
+        key = res['webinarKey']
       end
 
+      key
     end
+
+
 end
