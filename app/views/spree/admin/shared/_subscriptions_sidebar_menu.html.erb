@@ -1,0 +1,5 @@
+<% if can? :admin, Spree::AccountSubscription %>
+  <ul class="nav nav-sidebar">
+    <%= tab Spree::AccountSubscription, url: spree.admin_account_subscriptions_url, icon: 'calendar', label: 'subscriptions' %>
+  </ul>
+<% end %>

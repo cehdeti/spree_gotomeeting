@@ -2,7 +2,7 @@
 Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.name        = 'spree_gotomeeting'
-  s.version     = '0.1'
+  s.version     = '0.11'
   s.summary     = 'Spree Gotomeeting Product'
   s.description = 'Spree extension that adds the ability to create webinars as products, which interface with the Citrix Gotomeeting API'
   s.required_ruby_version = '>= 2.1.0'
@@ -19,6 +19,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'spree_core', '~> 3.1.0.rc3'
 
+
   s.add_development_dependency 'capybara', '~> 2.6'
   s.add_development_dependency 'coffee-rails'
   s.add_development_dependency 'database_cleaner'
@@ -29,4 +30,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'selenium-webdriver'
   s.add_development_dependency 'simplecov'
   s.add_development_dependency 'sqlite3'
+
+
 end
