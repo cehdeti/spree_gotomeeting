@@ -1,14 +1,18 @@
-Spree::Core::Engine.routes.draw do
-  namespace :admin do
 
-    resources :products
 
+Spree::Core::Engine.add_routes do
+  namespace :api do
+    namespace :v1 do
+      match 'webinars/all' => 'webinars#all', :via => :get
+
+      resources :webinars
+
+      resources :webinar_registrations
+
+      resources :users do
+        get 'webinar_registrations'
+      end
+
+    end
   end
-
-# namespace :api, defaults: { format: 'json' } do
-#   namespace :v1 do
-#      resources :account_subscriptions, only: :show, param: :user_id
-#    end
-#  end
-
 end
