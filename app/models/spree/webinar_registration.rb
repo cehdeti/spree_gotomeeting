@@ -39,34 +39,41 @@ class Spree::WebinarRegistration < ActiveRecord::Base
   end
 
   def sync_with_citrix
-    puts "syncing with citrix! #{self}"
+    puts "syncing with citrix! #{self} and checking time"
 
-    if !self.registrant_key
-      puts "no registrant key, check with citrix"
-      @g2w = GoToWebinar::Client.new( Spree::GoToMeeting::ACCESS_TOKEN, Spree::GoToMeeting::ORGANIZER_KEY)
+    if self.product.webinar_date > Time.now
 
-      params = {
-          :firstName => self.user.bill_address.first_name,
-          :lastName => self.user.bill_address.last_name,
-          :email => 'saun0063@umn.edu'
-      }
-      puts "data: #{params}"
-      url = "webinars/#{self.product.webinar_key}/registrants"
+      if !self.registrant_key
+        puts "no registrant key, check with citrix"
+        @g2w = GoToWebinar::Client.new( Spree::GoToMeeting::ACCESS_TOKEN, Spree::GoToMeeting::ORGANIZER_KEY)
 
-      to_citrix = @g2w.class.post(url, :body => params.to_json)
+        params = {
+            :firstName => self.user.bill_address.first_name,
+            :lastName => self.user.bill_address.last_name,
+            :email => self.user.email
+        }
 
-      data = to_citrix.parsed_response
-      puts "RESPONSE #{data} qqq #{data['registrantKey']} 222 #{data[:registrantKey]}"
+        puts "data: #{params}"
+        url = "webinars/#{self.product.webinar_key}/registrants"
 
-      self.registrant_key = data['registrantKey']
-      self.join_url = data['joinUrl']
-      self.registration_status = data['status']
-      self.save
-      puts "UPDATED all!!"
+        to_citrix = @g2w.class.post(url, :body => params.to_json)
+
+        data = to_citrix.parsed_response
+        puts "RESPONSE #{data} qqq #{data['registrantKey']} 222 #{data[:registrantKey]}"
+
+        self.registrant_key = data['registrantKey']
+        self.join_url = data['joinUrl']
+        self.registration_status = data['status']
+        self.update_columns(registration_status: data['status'], join_url: data['joinUrl'], registrant_key: data['registrant_key'])
+        puts "UPDATED Columns!!"
+      else
+        puts "NO SYNC, record already has registrant key"
+      end
     else
-      puts "NO SYNC, record already has registrant key"
-    end
 
+      puts "webinar is in the future, no sync"
+
+    end
   end
 
 end
