@@ -28,7 +28,6 @@ module Spree
           authorize! :create, WebinarRegistration
           product = Spree::Product.find_by(id: params[:webinar_registration][:product_id])
           user = Spree::User.find_by(id: params[:webinar_registration][:user_id])
-          puts "CREATING REGISTRATION, product #{product}, user: #{user}"
           @webinar_registration = Spree::WebinarRegistration.register!(
             user:user,
             product:product

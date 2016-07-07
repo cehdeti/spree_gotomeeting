@@ -115,8 +115,6 @@ Spree::Admin::ProductsController.class_eval do
 
   def parse_response_for_webinar_key( api_response )
 
-    puts "PARSING RESPONSE: #{api_response.parsed_response}"
-
     res = api_response.parsed_response
     key = nil
 
@@ -134,8 +132,6 @@ Spree::Admin::ProductsController.class_eval do
       details = @g2w.get_webinar( @product.webinar_key)
 
       result = details.parsed_response
-
-      puts "RESULT: #{result}"
     end
 
 
