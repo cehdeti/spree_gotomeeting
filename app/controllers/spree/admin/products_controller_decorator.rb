@@ -39,7 +39,7 @@ Spree::Admin::ProductsController.class_eval do
   private
 
   def setup_citrix
-    @g2w = GoToWebinar::Client.new( Spree::GoToMeeting::ACCESS_TOKEN, Spree::GoToMeeting::ORGANIZER_KEY)
+    @g2w = GoToWebinar::Client.new( Spree::GoToMeeting::Config.access_token, Spree::GoToMeeting::Config.organizer_key)
   end
 
   def check_webinar_saved

@@ -43,7 +43,7 @@ class Spree::WebinarRegistration < ActiveRecord::Base
     if self.product.webinar_date > Time.now
 
       if !self.registrant_key
-        @g2w = GoToWebinar::Client.new( Spree::GoToMeeting::ACCESS_TOKEN, Spree::GoToMeeting::ORGANIZER_KEY)
+        @g2w = GoToWebinar::Client.new( Spree::GoToMeeting::Config.access_token, Spree::GoToMeeting::Config.organizer_key)
 
         params = {
             :firstName => self.user.bill_address.first_name,
