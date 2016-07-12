@@ -32,8 +32,6 @@ class Spree::WebinarRegistration < ActiveRecord::Base
   def sync_with_citrix
     return if product.webinar_date <= Time.now || registrant_key
 
-    g2w = GoToWebinar::Client.new(Spree::GoToMeeting.access_token, Spree::GoToMeeting.organizer_key)
-
     params = {
       firstName: self.user.bill_address.first_name,
       lastName: self.user.bill_address.last_name,
@@ -41,7 +39,7 @@ class Spree::WebinarRegistration < ActiveRecord::Base
     }
 
     url = "webinars/#{self.product.webinar_key}/registrants"
-    to_citrix = g2w.class.post(url, body: params.to_json)
+    to_citrix = SpreeGotomeeting.client.class.post(url, body: params.to_json)
     data = to_citrix.parsed_response
 
     update_columns(

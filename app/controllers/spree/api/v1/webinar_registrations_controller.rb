@@ -2,10 +2,8 @@ module Spree
   module Api
     module V1
       class WebinarRegistrationsController < Spree::Api::BaseController
-
-
         before_action :find_registration, only: :show
-        before_action :find_registrations, only: [:index,:all]
+        before_action :find_registrations, only: [:index, :all]
 
         def all
           authorize! :all, @webinar_registrations
@@ -36,13 +34,11 @@ module Spree
           if @webinar_registration
             render nothing: true, :status => 201
           end
-
         end
 
         private
 
         def find_registration(lock = false)
-
           @webinar_registration = Spree::WebinarRegistration.find(params[:id])
         end
 

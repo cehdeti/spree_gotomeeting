@@ -12,13 +12,13 @@ Gem::Specification.new do |s|
   s.homepage  = 'http://eti.umn.edu'
   s.license = 'BSD-3'
 
-  # s.files       = `git ls-files`.split("\n")
-  # s.test_files  = `git ls-files -- {test,spec,features}/*`.split("\n")
+  s.files       = `git ls-files`.split("\n")
+  s.test_files  = `git ls-files -- {test,spec,features}/*`.split("\n")
   s.require_path = 'lib'
   s.requirements << 'none'
 
   s.add_dependency 'spree_core', '~> 3.1.0.rc3'
-
+  s.add_dependency 'go_to_webinar', '~> 0.0.3'
 
   s.add_development_dependency 'capybara', '~> 2.6'
   s.add_development_dependency 'coffee-rails'
@@ -30,6 +30,4 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'selenium-webdriver'
   s.add_development_dependency 'simplecov'
   s.add_development_dependency 'sqlite3'
-
-
 end

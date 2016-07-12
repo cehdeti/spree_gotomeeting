@@ -13,17 +13,23 @@ Introduction goes here.
   The `branch` option is important: it must match the version of Spree you're using.
   For example, use `3-1-stable` if you're using Spree `3-1-stable` or any `3.1.x` version.
 
-2. Install the gem using Bundler:
+2. This gem requires the `go_to_webinar` gem, which is not published to
+   rubygems. So you'll need to also add that gem to your `Gemfile`:
+   ```ruby
+   gem 'go_to_webinar', github: 'citrixonline/GoToWebinar-Ruby'
+   ```
+
+3. Install the gem using Bundler:
   ```ruby
   bundle install
   ```
 
-3. Copy & run migrations
+4. Copy & run migrations
   ```ruby
   bundle exec rails g spree_gotomeeting:install
   ```
 
-4. Restart your server
+5. Restart your server
 
   If your server was running, restart it so that it can find the assets properly.
 

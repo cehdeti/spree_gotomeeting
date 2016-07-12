@@ -1,9 +1,25 @@
-require 'spree_core'
+require 'go_to_webinar'
 require 'spree_gotomeeting/engine'
+require 'spree_gotomeeting/configuration'
 
 module SpreeGotomeeting
-  class_attribute :client_id
-  class_attribute :consumer_secret
-  class_attribute :access_token
-  class_attribute :organizer_key
+  def self.client
+    @client ||= GoToWebinar::Client.new(
+      configuration.access_token,
+      configuration.organizer_key
+    )
+  end
+
+  def self.configure
+    yield configuration
+  end
+
+  def self.configuration
+    @config ||= Configuration.new
+  end
+
+  def self.reset!
+    @config = nil
+    @client = nil
+  end
 end
