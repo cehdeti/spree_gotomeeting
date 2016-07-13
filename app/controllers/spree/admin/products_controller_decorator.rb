@@ -68,10 +68,10 @@ Spree::Admin::ProductsController.class_eval do
     end_time = start_time + 1.hour
 
     {
-      times: [
+      times: [{
         startTime: start_time.strftime("%FT%TZ"),
         endTime: end_time.strftime("%FT%TZ")
-      ],
+      }],
       timezone: 'CST',
       subject: @product.name,
       description: strip_tags(@product.description),
