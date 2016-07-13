@@ -1,30 +1,26 @@
-<%= f.field_container :is_webinar do %>
-  <%= f.label :is_webinar, 'Is this a webinar?' %><br />
-  <%= f.check_box :is_webinar %>
+<%= f.field_container :webinar do %>
+  <%= f.label :webinar, 'Is this a webinar?' %><br />
+  <%= f.check_box :webinar %>
 <% end %>
 
 <%= f.field_container :webinar_key do %>
-    <%= f.label :webinar_key, 'Webinar Key' %><br />
-    <%= f.text_field :webinar_key, :readonly => true %>
+  <%= f.label :webinar_key, 'Webinar Key' %><br />
+  <%= f.text_field :webinar_key, readonly: true %>
 <% end %>
 
-
 <%= f.field_container :webinar_date do %>
-    <%= f.label :webinar_date, 'Date of webinar:' %><br />
+  <%= f.label :webinar_date, 'Date of webinar:' %><br />
 
-    <div class="input-group date" id='webinarDatetimePicker'>
-      <%= f.text_field :webinar_date, value:@product.webinar_date,  class: 'form-control' %>
-      <span class="input-group-addon">
-          <span class="glyphicon glyphicon-calendar"></span>
-      </span>
-    </div>
-
-
+  <div class="input-group date" id='webinarDatetimePicker'>
+    <%= f.text_field :webinar_date, value: @product.webinar_date, class: 'form-control' %>
+    <span class="input-group-addon">
+      <span class="glyphicon glyphicon-calendar"></span>
+    </span>
+  </div>
 <% end %>
 
 <script type="text/javascript">
   $(function () {
-    console.log("hellow datetime picker!");
     $('#webinarDatetimePicker').datetimepicker({
       format: "YYYY-MM-DD HH:mm:ss z",
       useCurrent:false

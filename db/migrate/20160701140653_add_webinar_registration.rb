@@ -11,6 +11,5 @@ class AddWebinarRegistration < ActiveRecord::Migration
     end
     add_index :spree_webinar_registrations, :user_id
     add_index :spree_webinar_registrations, :product_id
-
   end
 end

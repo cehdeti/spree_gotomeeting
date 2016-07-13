@@ -3,7 +3,7 @@ module Spree
     module V1
       class WebinarsController < Spree::Api::BaseController
         before_action :find_webinar, only: :show
-        before_action :get_webinars, only: [:index,:all]
+        before_action :get_webinars, only: [:index, :all]
 
         def all
           authorize! :all, @webinars
@@ -22,12 +22,12 @@ module Spree
 
         private
 
-        def find_webinar(lock = false)
+        def find_webinar
           @webinar = Spree::Product.includes(:product_properties).find(params[:id])
         end
 
         def get_webinars
-          @webinars = Spree::Product.includes(:product_properties).order(webinar_date: :desc).where(is_webinar: true)
+          @webinars = Spree::Product.includes(:product_properties).webinar.order(webinar_date: :desc)
         end
       end
     end
