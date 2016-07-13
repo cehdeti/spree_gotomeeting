@@ -46,7 +46,6 @@ Spree::Admin::ProductsController.class_eval do
   end
 
   def make_webinar_in_citrix
-    params = generate_params
 
     newwebinar = SpreeGotomeeting.client.class.post('webinars', body: generate_params.to_json)
     webinar_key = parse_response_for_webinar_key(newwebinar)
@@ -69,10 +68,10 @@ Spree::Admin::ProductsController.class_eval do
     end_time = start_time + 1.hour
 
     {
-      times: {
+      times: [
         startTime: start_time.strftime("%FT%TZ"),
         endTime: end_time.strftime("%FT%TZ")
-      },
+      ],
       timezone: 'CST',
       subject: @product.name,
       description: strip_tags(@product.description),
