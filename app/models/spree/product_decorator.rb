@@ -1,9 +1,22 @@
 Spree::Product.class_eval do
-  validates :webinar_date, presence: true, if: :webinar?
+  validates :webinar_date, if: :webinar?,
+            presence: true,
+            timeliness: {
+              on_or_after: Time.zone.now, on_or_after_message: 'cannot be in the past',
+              type: :datetime
+            }
 
-  after_save -> { WebinarToCitrix.new(self).run }, if: :webinar?
+  after_save :save_to_citrix, if: :webinar?
 
   scope :webinar, -> { where(webinar: true) }
+
+  private
+
+  def save_to_citrix
+    WebinarToCitrix.new(self).run
+  rescue => ex
+    logger.error("Error saving webinar to Citrix API: #{ex.message}")
+  end
 
   class WebinarToCitrix
     attr_accessor :product
@@ -20,17 +33,22 @@ Spree::Product.class_eval do
 
     def create
       response = SpreeGotomeeting.client.class.post('webinars', body: serialized_product)
-      webinar_key = webinar_key_from_response(response) || raise('Webinar key not returned from Citrix API')
-      product.update_column(:webinar_key, webinar_key) && product.reload
+      product.update_column(:webinar_key, webinar_key_or_fail(response)) && product.reload
     end
 
     def update
-      SpreeGotomeeting.client.class.put("webinars/#{product.webinar_key}", body: serialized_product)
+      response = SpreeGotomeeting.client.class.put("webinars/#{product.webinar_key}", body: serialized_product)
+      webinar_key_or_fail(response)
     end
 
-    def webinar_key_from_response(response)
+    def webinar_key_or_fail(response)
       res = response.parsed_response
-      res['webinarKey'] if res && res['webinarKey'] && !res['webinarKey'].empty?
+
+      case
+      when res.include?('webinarKey') then res['webinarKey']
+      when res.include?('errorCode') then raise("#{res['description']}: #{res['Details']}")
+      else raise("Unexpected response from Citrix API: #{res}")
+      end
     end
 
     def serialized_product
