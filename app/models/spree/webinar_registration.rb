@@ -32,9 +32,10 @@ class Spree::WebinarRegistration < ActiveRecord::Base
   def sync_with_citrix
     return if product.webinar_date <= Time.now || registrant_key
 
+
     params = {
-      firstName: self.user.bill_address.first_name,
-      lastName: self.user.bill_address.last_name,
+      firstName: self.user.bill_address? ? self.user.bill_address.first_name : 'firstname',
+      lastName: self.user.bill_address? ? self.user.bill_address.last_name : 'lastname',
       email: self.user.email
     }
 
