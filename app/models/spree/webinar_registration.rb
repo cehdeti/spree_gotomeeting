@@ -34,8 +34,8 @@ class Spree::WebinarRegistration < ActiveRecord::Base
 
 
     params = {
-      firstName: self.user.bill_address? ? self.user.bill_address.first_name : 'firstname',
-      lastName: self.user.bill_address? ? self.user.bill_address.last_name : 'lastname',
+      firstName: self.user.bill_address ? self.user.bill_address.first_name : 'firstname',
+      lastName: self.user.bill_address ? self.user.bill_address.last_name : 'lastname',
       email: self.user.email
     }
 
