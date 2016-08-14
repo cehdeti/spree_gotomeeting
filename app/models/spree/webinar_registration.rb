@@ -41,6 +41,7 @@ class Spree::WebinarRegistration < ActiveRecord::Base
 
     url = "/webinars/#{self.product.webinar_key}/registrants"
     to_citrix = SpreeGotomeeting.client.class.post(url, body: params.to_json)
+    puts "TOCITRICX Response #{to_citrix} and parsed response #{to_citrix.parsed_response}"
     data = to_citrix.parsed_response
 
     update_columns(
