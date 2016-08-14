@@ -39,7 +39,7 @@ class Spree::WebinarRegistration < ActiveRecord::Base
       email: self.user.email
     }
 
-    url = "webinars/#{self.product.webinar_key}/registrants"
+    url = "/webinars/#{self.product.webinar_key}/registrants"
     to_citrix = SpreeGotomeeting.client.class.post(url, body: params.to_json)
     data = to_citrix.parsed_response
 
