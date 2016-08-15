@@ -27,7 +27,6 @@ module Spree
         end
 
         def get_webinars
-          Spree::Product.reorder(:webinar_date => :desc )
           @webinars = Spree::Product.includes(:product_properties).webinar.order(webinar_date: :desc)
         end
       end
