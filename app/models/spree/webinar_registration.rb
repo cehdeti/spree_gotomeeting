@@ -30,19 +30,16 @@ class Spree::WebinarRegistration < ActiveRecord::Base
   end
 
   def sync_with_citrix
-    logger.debug "syncing with citrix:: #{registrant_key}"
     return if product.webinar_date <= Time.now || registrant_key
 
-
     params = {
-      firstName: self.user.bill_address ? self.user.bill_address.first_name : 'firstname',
-      lastName: self.user.bill_address ? self.user.bill_address.last_name : 'lastname',
+      firstName: self.user.bill_address ? self.user.bill_address.first_name : self.user.email,
+      lastName: self.user.bill_address ? self.user.bill_address.last_name : '',
       email: self.user.email
     }
 
     url = "/webinars/#{self.product.webinar_key}/registrants"
     to_citrix = SpreeGotomeeting.client.class.post(url, body: params.to_json)
-    logger.debug "TOCITRICX Response #{to_citrix} and parsed response #{to_citrix.parsed_response}"
     data = to_citrix.parsed_response
 
     update_columns(
