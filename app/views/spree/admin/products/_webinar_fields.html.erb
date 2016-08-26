@@ -19,6 +19,12 @@
   </div>
 <% end %>
 
+<%= f.field_container :vimeo_id do %>
+    <%= f.label :vimeo_id, 'Vimeo ID' %><br />
+    <%= f.text_field :vimeo_id %>
+<% end %>
+
+
 <script type="text/javascript">
   $(function () {
     $('#webinarDatetimePicker').datetimepicker({

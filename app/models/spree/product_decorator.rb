@@ -32,13 +32,11 @@ Spree::Product.class_eval do
     private
 
     def create
-      puts "CREATING NEW WEBINAR #{self.product}"
       response = SpreeGotomeeting.client.class.post('/webinars', body: serialized_product)
       product.update_column(:webinar_key, webinar_key_or_fail(response)) && product.reload
     end
 
     def update
-      puts "UPDATING WEBINAR! #{self.product}"
       response = SpreeGotomeeting.client.class.put("/webinars/#{product.webinar_key}", body: serialized_product)
       webinar_key_or_fail(response)
     end
