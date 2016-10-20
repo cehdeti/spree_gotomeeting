@@ -33,10 +33,18 @@ class Spree::WebinarRegistration < ActiveRecord::Base
     return if product.webinar_date <= Time.now || registrant_key
 
     params = {
-      firstName: self.user.bill_address ? self.user.bill_address.first_name : self.user.email,
-      lastName: self.user.bill_address ? self.user.bill_address.last_name : '',
-      email: self.user.email
+        firstName: self.user.email,
+        lastName: self.user.email,
+        email: self.user.email
     }
+
+    if self.user.bill_address
+      params = {
+        firstName: self.user.bill_address ? self.user.bill_address.first_name : self.user.email,
+        lastName: self.user.bill_address ? self.user.bill_address.last_name : '',
+        email: self.user.email
+      }
+    end
 
     url = "/webinars/#{self.product.webinar_key}/registrants"
     to_citrix = SpreeGotomeeting.client.class.post(url, body: params.to_json)
