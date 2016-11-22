@@ -3,7 +3,7 @@ Spree::Order.class_eval do
     line_items.each do |line_item|
       next unless line_item.variant.product.webinar?
 
-      WebinarRegistration.register!(
+      Spree::WebinarRegistration.register!(
         user: user,
         product: line_item.variant.product
       )
