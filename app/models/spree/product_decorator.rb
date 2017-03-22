@@ -1,10 +1,4 @@
 Spree::Product.class_eval do
-  validates :webinar_date, if: :webinar?,
-            presence: true,
-            timeliness: {
-              on_or_after: Time.zone.now, on_or_after_message: 'cannot be in the past',
-              type: :datetime
-            }
 
   after_save :save_to_citrix, if: :webinar?
 
