@@ -4,9 +4,11 @@ require 'spree_gotomeeting/configuration'
 
 module SpreeGotomeeting
   def self.client
+
     @client ||= GoToWebinar::Client.new(
       configuration.access_token,
-      configuration.organizer_key
+      configuration.organizer_key,
+      {:base_uri => configuration.base_uri}
     )
   end
 
