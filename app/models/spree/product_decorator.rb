@@ -46,7 +46,7 @@ Spree::Product.class_eval do
     end
 
     def serialized_product
-      start_time = product.webinar_date - Time.zone_offset('EST')
+      start_time = product.webinar_date - Time.zone_offset('CST')
       end_time = start_time + 1.hour
 
       {
