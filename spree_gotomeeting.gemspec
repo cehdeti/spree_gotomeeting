@@ -4,7 +4,7 @@ Gem::Specification.new do |s|
   s.name        = 'spree_gotomeeting'
   s.version     = '0.11'
   s.summary     = 'Spree Gotomeeting Product'
-  s.description = 'Spree extension that adds the ability to create webinars as products, which interface with the Citrix Gotomeeting API'
+  s.description = 'Spree extension that adds the ability to create webinars as products, which interface with the Gotomeeting API'
   s.required_ruby_version = '>= 2.1.0'
 
   s.author    = 'Thomas Saunders'
@@ -19,16 +19,15 @@ Gem::Specification.new do |s|
 
   spree_version = '>= 3.1.0', '< 4.0'
   s.add_dependency 'spree_core', spree_version
-  s.add_dependency 'go_to_webinar', '~> 0.0.3'
-  s.add_dependency 'validates_timeliness', '~> 4.0'
+  s.add_dependency 'http', '~> 3'
 
-  s.add_development_dependency 'capybara', '~> 2.6'
+  s.add_development_dependency 'capybara'
   s.add_development_dependency 'coffee-rails'
   s.add_development_dependency 'database_cleaner'
-  s.add_development_dependency 'factory_girl', '~> 4.5'
+  s.add_development_dependency 'factory_girl'
   s.add_development_dependency 'ffaker'
-  s.add_development_dependency 'rspec-rails', '~> 3.4'
-  s.add_development_dependency 'sass-rails', '~> 5.0.0'
+  s.add_development_dependency 'rspec-rails'
+  s.add_development_dependency 'sass-rails'
   s.add_development_dependency 'selenium-webdriver'
   s.add_development_dependency 'simplecov'
   s.add_development_dependency 'sqlite3'

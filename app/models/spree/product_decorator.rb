@@ -7,12 +7,10 @@ Spree::Product.class_eval do
   private
 
   def save_to_citrix
-    WebinarToCitrix.new(self).run
-  rescue => ex
-    logger.error("Error saving webinar to Citrix API: #{ex.message}")
+    WebinarToGotomeeting.new(self).run
   end
 
-  class WebinarToCitrix
+  class WebinarToGotomeeting
     attr_accessor :product
 
     def initialize(product)
@@ -26,23 +24,28 @@ Spree::Product.class_eval do
     private
 
     def create
-      response = SpreeGotomeeting.client.class.post('/webinars', body: serialized_product)
-      product.update_column(:webinar_key, webinar_key_or_fail(response)) && product.reload
+      response = SpreeGotomeeting.client.post(
+        '/G2W/rest/v2/organizers/%{organizer_key}/webinars',
+        json: serialized_product
+      )
+      response_ok_or_fail(response)
+      product.update_column(:webinar_key, response.parse['webinarKey']) && product.reload
     end
 
     def update
-      response = SpreeGotomeeting.client.class.put("/webinars/#{product.webinar_key}", body: serialized_product)
-      webinar_key_or_fail(response)
+      response = SpreeGotomeeting.client.put(
+        "/G2W/rest/v2/organizers/%{organizer_key}/webinars/#{product.webinar_key}",
+        body: serialized_product
+      )
+      response_ok_or_fail(response)
     end
 
-    def webinar_key_or_fail(response)
-      res = response.parsed_response
+    def response_ok_or_fail(response)
+      return unless response.code >= 400
+      res = response.parse
 
-      case
-      when res.include?('webinarKey') then res['webinarKey']
-      when res.include?('errorCode') then raise("#{res['description']}: #{res['Details']}")
-      else raise("Unexpected response from Citrix API: #{res}")
-      end
+      raise("#{res['description']}: #{res['details']}") if res.include?('errorCode')
+      raise("Unexpected response from Citrix API: #{res}")
     end
 
     def serialized_product
@@ -51,14 +54,14 @@ Spree::Product.class_eval do
 
       {
         times: [{
-          startTime: start_time.strftime("%FT%TZ"),
-          endTime: end_time.strftime("%FT%TZ")
+          startTime: start_time.strftime('%FT%TZ'),
+          endTime: end_time.strftime('%FT%TZ')
         }],
         timezone: 'CST',
         subject: product.name,
         description: ActionView::Base.full_sanitizer.sanitize(product.description, encode_special_chars: false),
         isPasswordProtected: true
-      }.to_json
+      }
     end
   end
 end

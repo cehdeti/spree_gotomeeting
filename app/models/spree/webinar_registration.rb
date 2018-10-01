@@ -2,53 +2,27 @@ class Spree::WebinarRegistration < ActiveRecord::Base
   belongs_to :user, class_name: Spree.user_class
   belongs_to :product, class_name: 'Spree::Product'
 
-  after_save :sync_with_citrix
+  after_save :sync_with_gotomeeting
 
-  def self.register!(opts)
-    opts.to_options!.assert_valid_keys(:user, :product)
-    existing_registration = where(user_id: opts[:user].id, product_id: opts[:product].id).first
-
-    if existing_registration
-      existing_registration.user = opts[:user]
-      existing_registration.product = opts[:product]
-      existing_registration.save
-    else
-      new_registration(opts[:user], opts[:product])
-    end
+  def self.register!(product, user)
+    find_or_create_by(user: user, product: product)
   end
 
   private
 
-  def self.new_registration(user, webinar)
-    create do |r|
-      r.user = user
-      r.product = webinar
-      r.registrant_key = nil
-      r.registration_status = nil
-      r.join_url = nil
-    end
-  end
-
-  def sync_with_citrix
+  def sync_with_gotomeeting
     return if product.webinar_date <= Time.now || registrant_key
 
     params = {
-        firstName: self.user.email,
-        lastName: self.user.email,
-        email: self.user.email
+      firstName: user.bill_address.try(:first_name) || user.email,
+      lastName: user.bill_address.try(:last_name) || user.email,
+      email: user.email
     }
 
-    if self.user.bill_address
-      params = {
-        firstName: self.user.bill_address ? self.user.bill_address.first_name : self.user.email,
-        lastName: self.user.bill_address ? self.user.bill_address.last_name : '',
-        email: self.user.email
-      }
-    end
-
-    url = "/webinars/#{self.product.webinar_key}/registrants"
-    to_citrix = SpreeGotomeeting.client.class.post(url, body: params.to_json)
-    data = to_citrix.parsed_response
+    data = SpreeGotomeeting.client.post(
+      "/G2W/rest/v2/organizers/%{organizer_key}/webinars/#{product.webinar_key}/registrants",
+      json: params
+    ).parse
 
     update_columns(
       registration_status: data['status'],
