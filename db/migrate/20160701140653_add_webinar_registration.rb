@@ -1,4 +1,4 @@
-class AddWebinarRegistration < ActiveRecord::Migration
+class AddWebinarRegistration < ActiveRecord::Migration[4.2]
   def change
     create_table :spree_webinar_registrations do |t|
       t.references :user
