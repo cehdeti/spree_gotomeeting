@@ -49,15 +49,12 @@ Spree::Product.class_eval do
     end
 
     def serialized_product
-      start_time = product.webinar_date - Time.zone_offset('CST')
-      end_time = start_time + 1.hour
-
       {
         times: [{
-          startTime: start_time.strftime('%FT%TZ'),
-          endTime: end_time.strftime('%FT%TZ')
+          startTime: product.webinar_date.utc.iso8601,
+          endTime: (product.webinar_date + 1.hour).utc.iso8601
         }],
-        timezone: 'CST',
+        timezone: Time.zone.now.zone,
         subject: product.name,
         description: ActionView::Base.full_sanitizer.sanitize(product.description, encode_special_chars: false),
         isPasswordProtected: true
