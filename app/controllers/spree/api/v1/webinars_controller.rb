@@ -34,7 +34,7 @@ module Spree
           Spree::Product
             .includes(:product_properties)
             .webinar
-            .available
+            .where("#{Spree::Product.quoted_table_name}.available_on <= ?", Time.current)
             .where.not(webinar_date: nil)
         end
       end
