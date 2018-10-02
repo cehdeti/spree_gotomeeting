@@ -31,7 +31,11 @@ module Spree
         end
 
         def webinar_scope
-          Spree::Product.includes(:product_properties).webinar.where.not(webinar_date: nil)
+          Spree::Product
+            .includes(:product_properties)
+            .webinar
+            .available
+            .where.not(webinar_date: nil)
         end
       end
     end
