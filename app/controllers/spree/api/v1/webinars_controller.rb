@@ -23,11 +23,15 @@ module Spree
         private
 
         def find_webinar
-          @webinar = Spree::Product.includes(:product_properties).find(params[:id])
+          @webinar = webinar_scope.find(params[:id])
         end
 
         def find_webinars
-          @webinars = Spree::Product.includes(:product_properties).webinar.order(webinar_date: :desc)
+          @webinars = webinar_scope.order(webinar_date: :desc)
+        end
+
+        def webinar_scope
+          Spree::Product.includes(:product_properties).webinar.where.not(webinar_date: nil)
         end
       end
     end
