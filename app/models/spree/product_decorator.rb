@@ -1,12 +1,12 @@
 Spree::Product.class_eval do
 
-  after_save :save_to_citrix, if: :webinar?
+  after_save :save_to_gotomeeting, if: :webinar?
 
   scope :webinar, -> { where(webinar: true) }
 
   private
 
-  def save_to_citrix
+  def save_to_gotomeeting
     WebinarToGotomeeting.new(self).run
   end
 
@@ -35,7 +35,7 @@ Spree::Product.class_eval do
     def update
       response = SpreeGotomeeting.client.put(
         "/G2W/rest/v2/organizers/%{organizer_key}/webinars/#{product.webinar_key}",
-        body: serialized_product
+        json: serialized_product
       )
       response_ok_or_fail(response)
     end
