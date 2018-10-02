@@ -1,5 +1,5 @@
 class Spree::WebinarRegistration < ActiveRecord::Base
-  belongs_to :user, class_name: Spree.user_class
+  belongs_to :user, class_name: Spree.user_class.to_s
   belongs_to :product, class_name: 'Spree::Product'
 
   after_save :sync_with_gotomeeting
