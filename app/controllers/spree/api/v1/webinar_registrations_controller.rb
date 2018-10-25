@@ -15,30 +15,25 @@ module Spree
           respond_with(@webinars)
         end
 
-
         def show
           authorize! :show, @webinar_registration
           respond_with(@webinar)
         end
 
-
         def create
           authorize! :create, WebinarRegistration
           product = Spree::Product.find_by!(id: params[:webinar_registration][:product_id])
           user = Spree::User.find_by!(id: params[:webinar_registration][:user_id])
-          @webinar_registration = Spree::WebinarRegistration.register!(
-            user:user,
-            product:product
+          @webinar_registration = Spree::WebinarRegistration.find_or_create_by!(
+            user: user,
+            product: product
           )
-
-          if @webinar_registration
-            render nothing: true, :status => 201
-          end
+          render nothing: true, status: 201
         end
 
         private
 
-        def find_registration(lock = false)
+        def find_registration
           @webinar_registration = Spree::WebinarRegistration.find(params[:id])
         end
 
