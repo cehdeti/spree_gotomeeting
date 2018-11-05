@@ -7,6 +7,7 @@ Spree::Product.class_eval do
   private
 
   def save_to_gotomeeting
+    return unless webinar_date && webinar_date > Time.zone.now
     WebinarToGotomeeting.new(self).run
   end
 
