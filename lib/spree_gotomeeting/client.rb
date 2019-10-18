@@ -5,11 +5,12 @@ module SpreeGotomeeting
     BASE_URI = 'https://api.getgo.com/'.freeze
     AUTH_CACHE_KEY = 'spree_gotomeeting_auth'.freeze
 
-    attr_accessor :consumer_token, :username, :password
+    attr_accessor :consumer_token, :consumer_secret, :username, :password
     attr_writer :cache
 
-    def initialize(consumer_token, username, password, **args)
+    def initialize(consumer_token, consumer_secret, username, password, **args)
       self.consumer_token = consumer_token
+      self.consumer_secret = consumer_secret
       self.username = username
       self.password = password
 
@@ -18,7 +19,7 @@ module SpreeGotomeeting
       end
     end
 
-    [:get, :post, :put, :delete].each do |method|
+    %i[get post put delete].each do |method|
       define_method(method) do |uri, **kwargs|
         creds = auth
         HTTP
@@ -30,6 +31,7 @@ module SpreeGotomeeting
 
     def base_uri=(uri)
       return unless uri
+
       uri = "#{uri}/" unless uri.end_with?('/')
       @base_uri = uri
     end
@@ -39,18 +41,23 @@ module SpreeGotomeeting
     def auth
       unless cache.exist?(AUTH_CACHE_KEY)
         data = do_auth
-        cache.write(AUTH_CACHE_KEY, data, expires_in: data['expires_in'].to_i.seconds)
+        cache.write(AUTH_CACHE_KEY, data, expires_in: data['expires_in'].seconds)
       end
       cache.read(AUTH_CACHE_KEY)
     end
 
     def do_auth
       HTTP
-        .headers(accept: 'application/json', content_type: 'application/x-www-form-urlencoded')
-        .post(
-          build_uri('/oauth/access_token'),
-          form: { grant_type: 'password', user_id: username, password: password, client_id: consumer_token }
+        .headers(
+          accept: 'application/json',
+          content_type: 'application/x-www-form-urlencoded'
         )
+        .basic_auth(user: consumer_token, pass: consumer_secret)
+        .post(build_uri('/oauth/v2/token'), form: {
+          grant_type: 'password',
+          username: username,
+          password: password
+        })
         .parse
     end
 

@@ -6,6 +6,7 @@ module SpreeGotomeeting
   def self.client
     @client ||= SpreeGotomeeting::Client.new(
       configuration.consumer_token,
+      configuration.consumer_secret,
       configuration.username,
       configuration.password,
       base_uri: configuration.base_uri
