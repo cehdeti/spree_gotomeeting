@@ -22,13 +22,13 @@ module Spree
 
         def create
           authorize! :create, WebinarRegistration
-          product = Spree::Product.find_by!(id: params[:webinar_registration][:product_id])
-          user = Spree::User.find_by!(id: params[:webinar_registration][:user_id])
-          @webinar_registration = Spree::WebinarRegistration.find_or_create_by!(
+          product = Spree::Product.find(params[:webinar_registration][:product_id])
+          user = Spree::User.find(params[:webinar_registration][:user_id])
+          Spree::WebinarRegistration.find_or_create_by!(
             user: user,
             product: product
           )
-          render nothing: true, status: 201
+          head :created
         end
 
         private

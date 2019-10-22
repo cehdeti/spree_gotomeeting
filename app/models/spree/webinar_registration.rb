@@ -4,10 +4,6 @@ class Spree::WebinarRegistration < ActiveRecord::Base
 
   after_save :sync_with_gotomeeting
 
-  def self.register!(product, user)
-    find_or_create_by(user: user, product: product)
-  end
-
   private
 
   def sync_with_gotomeeting
