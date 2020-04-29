@@ -1,6 +1,8 @@
 class Spree::WebinarRegistration < ActiveRecord::Base
-  belongs_to :user, class_name: Spree.user_class.to_s
-  belongs_to :product, class_name: 'Spree::Product'
+  acts_as_paranoid
+
+  belongs_to :user, class_name: Spree.user_class.to_s, dependent: :destroy
+  belongs_to :product, class_name: 'Spree::Product', dependent: :destroy
 
   after_save :sync_with_gotomeeting
 
