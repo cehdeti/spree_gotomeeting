@@ -22,6 +22,12 @@ class Spree::WebinarRegistration < ActiveRecord::Base
       json: params
     ).parse
 
+    unless data.status.success?
+      res = response.parse
+      raise("#{res['description']}: #{res['details']}") if res.include?('errorCode')
+      raise("Unexpected response from GoToMeeting API: #{res}")
+    end
+
     update_columns(
       registration_status: data['status'],
       join_url: data['joinUrl'],
