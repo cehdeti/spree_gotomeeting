@@ -17,10 +17,14 @@ class Spree::WebinarRegistration < ActiveRecord::Base
       email: user.email
     }
 
-    data = SpreeGotomeeting.client.post(
+    response = SpreeGotomeeting.client.post(
       "/G2W/rest/v2/organizers/%{organizer_key}/webinars/#{product.webinar_key}/registrants",
       json: params
-    ).parse
+    )
+
+    data = response.parse
+
+    raise("Unexpected response from GoToMeeting API: #{data}") unless response.status.success?
 
     update_columns(
       registration_status: data['status'],
