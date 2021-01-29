@@ -22,9 +22,9 @@ class Spree::WebinarRegistration < ActiveRecord::Base
       json: params
     )
 
-    raise("Unexpected response from GoToMeeting API: #{data}") unless response.status.success?
-
     data = response.parse
+
+    raise("Unexpected response from GoToMeeting API: #{data}") unless response.status.success?
 
     update_columns(
       registration_status: data['status'],
