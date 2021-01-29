@@ -23,7 +23,7 @@ class Spree::WebinarRegistration < ActiveRecord::Base
     ).parse
 
     unless data.status.success?
-      res = response.parse
+      res = data.parse
       raise("#{res['description']}: #{res['details']}") if res.include?('errorCode')
       raise("Unexpected response from GoToMeeting API: #{res}")
     end
